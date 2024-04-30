@@ -21,10 +21,6 @@ def parse(filtered_file, data):
 	
 	f = open(filtered_file, "r")
 	lines = f.readlines()
-	"""
-	['1444 1442.007091    192.168.100.1         192.168.200.2         ICMP     642    Echo (ping) reply    id=0x0001, seq=148/37888, ttl=128 (request in 1443)']]
-	['1444', '1442.007091', '192.168.100.1', '192.168.200.2', 'ICMP', '642', 'Echo', '(ping)', 'reply', 'id=0x0001,', 'seq=148/37888,', 'ttl=128', '(request', 'in', '1443)']
-	"""
 
 	# 13 pieces of data
 	for line in lines: 

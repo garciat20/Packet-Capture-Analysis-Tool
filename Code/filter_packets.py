@@ -15,12 +15,9 @@ def output_file(filename,filenum):
 	f.close()
 	filtered_file.close()
 
-
-
 def filter() :
 	output_file("Captures/Node1.txt",1)
 	output_file("Captures/Node1.txt",2)
 	output_file("Captures/Node1.txt",3)
 	output_file("Captures/Node1.txt",4)
-	print('called filter function in filter_packets.py')
 	
