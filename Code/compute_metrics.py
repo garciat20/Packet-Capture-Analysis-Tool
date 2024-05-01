@@ -1,3 +1,6 @@
+from unittest import result
+
+
 def compute(ip_address, res, file_num):
 	"""
 	13 summarys are computed/returned here
@@ -95,15 +98,16 @@ def compute(ip_address, res, file_num):
 				hop_ttl = res[i][11].split("=")
 				hop_count += (windows_hop - int(hop_ttl[1]))
 
-	print(hop_count)
+	# print(hop_count)
 
 	avg_rtt = (total_rtt_time / rtt_time) #avg ping round trip time  1
-	echo_request_throughput = total_bytes_sent / total_rtt_time
+	echo_request_throughput = total_bytes_sent / rtt_time
 
 	avg_hop = hop_count/ num_requests_sent # 2
-	echo_request_goodput = total_data_sent / total_RTT # 3
+	echo_request_goodput = total_data_sent / rtt_time # 3
 
-	avg_ping_RTT = total_RTT / total_packets
+	avg_replay_delay = hop_count / num_requests_sent
+	# avg_ping_RTT = total_RTT / total_packets
 
 	data_for_csv.append(num_requests_sent)
 	data_for_csv.append(num_requests_received)
@@ -115,31 +119,32 @@ def compute(ip_address, res, file_num):
 	data_for_csv.append(total_data_sent)
 	data_for_csv.append(total_data_received)
 
-	data_for_csv.append(avg_ping_RTT)
+	data_for_csv.append(avg_replay_delay)
 	data_for_csv.append(echo_request_throughput)
 	data_for_csv.append(echo_request_goodput)
-	data_for_csv.append(avg_reply_delay)
+	data_for_csv.append(avg_rtt)
 	#Below is where hop count will go, fill in variable name
 	data_for_csv.append(avg_hop)
 
 	results(data_for_csv, file_num)
 
-def format(file, data):
+def format_f(file, data):
 	#All 0s are placeholders, to be filled when compute_metrics is complete
 	file.write("\n")
 	file.write("Echo Requests Sent,Echo Requests Received,Echo Replies Sent,Echo Replies Received")
-	file.write(data[0] + "," + data[1] + "," + data[2] + "," + data[3])
+	file.write(f"{data[0]}, {data[1]}, {data[2]}, {data[3]}")
 	file.write("Echo Request Bytes Sent (bytes),Echo Request Data Sent (bytes)")
-	file.write(data[4] + "," + data[6])
+	file.write(f"{data[4]}, {data[6]}")
 	file.write("Echo Request Bytes Received (bytes),Echo Request Data Received (bytes)")
-	file.write(data[5] + "," + data[7])
+	file.write(f"{data[5]}, {data[7]}")
 	file.write ("\n")
 
-	file.write("Average RTT (milliseconds)," + data[8])
-	file.write("Echo Request Throughput (kB/sec)," + data[9])
-	file.write("Echo Request Goodput (kB/sec)," + data[10])
-	file.write("Average Reply Delay (microseconds)," + data[11])
-	file.write("Average Echo Request Hop Count," + data[12])
+	file.write(f"Average RTT (milliseconds), {data[8]}")
+	file.write(f"Echo Request Throughput (kB/sec), {data[9]}")
+	file.write(f"Echo Request Goodput (kB/sec), {data[10]}")
+	file.write(f"Average Reply Delay (microseconds), {data[11]}")
+	file.write(f"Average Echo Request Hop Count, {data[12]}")
+	file.write("\n")
 
 def results(compute_data, file_num):
 	"""
@@ -147,9 +152,9 @@ def results(compute_data, file_num):
 	"""
 	# unpack list of summarys returned = compute_data
 	filename="project2_output.csv"
-	with open(filename, "w") as file:
+	with open(filename, "a") as file:
 		file.write(f"Node {file_num}")
 		# need to finish formatting the csv file here
-		format(file, compute_data)
+		format_f(file, compute_data)
 		file.close()
 	

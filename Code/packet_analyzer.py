@@ -15,8 +15,13 @@ parse("Node2_filtered.txt", node_2_data)
 parse("Node3_filtered.txt", node_3_data)
 parse("Node4_filtered.txt", node_4_data)
 
+# filename="project2_output.csv"
+# file = open(filename,"w")
+
 compute("192.168.100.1",node_1_data, 1) #1st ip address of every file and the data we parsed
 compute("192.168.100.1",node_2_data, 2) #1st ip address of every file and the data we parsed
 compute("192.168.100.1",node_3_data, 3) #1st ip address of every file and the data we parsed
 compute("192.168.100.1",node_4_data, 4) #1st ip address of every file and the data we parsed
+
+# file.close()
 
