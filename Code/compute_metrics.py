@@ -18,6 +18,8 @@ def compute(ip_address, res, file_num):
 	11 : ttl (we need this for hops)
 	"""
 
+	data_for_csv = [] #13 pieces of data can be placed here
+
 	num_requests_sent = 0
 	num_requests_received = 0
 	
@@ -64,7 +66,6 @@ def compute(ip_address, res, file_num):
 				num_requests_received += 1
 				total_bytes_received += length
 				total_data_received += (length - 28)
-		
 		total_packets += 1
 
 	echo_request_throughput = total_bytes_sent / total_RTT
@@ -77,19 +78,18 @@ def compute(ip_address, res, file_num):
 	data_for_csv.append(num_requests_received)
 	data_for_csv.append(num_replies_sent)
 	data_for_csv.append(num_replies_received)
+
 	data_for_csv.append(total_bytes_sent)
 	data_for_csv.append(total_bytes_received)
 	data_for_csv.append(total_data_sent)
 	data_for_csv.append(total_data_received)
+
 	data_for_csv.append(avg_ping_RTT)
 	data_for_csv.append(echo_request_throughput)
 	data_for_csv.append(echo_request_goodput)
 	data_for_csv.append(avg_reply_delay)
-
-	data_for_csv = [] #13 pieces of data can be placed here
-
-	results(data_for_csv, file_num)
-
+	#Below is where hop count will go, fill in variable name
+	data_for_csv.append("Average Hop Count Here")
 
 	results(data_for_csv, file_num)
 
@@ -97,18 +97,18 @@ def format(file, data):
 	#All 0s are placeholders, to be filled when compute_metrics is complete
 	file.write("\n")
 	file.write("Echo Requests Sent,Echo Requests Received,Echo Replies Sent,Echo Replies Received")
-	file.write(data[0] + "," + data[0] + "," + data[0] + "," + data[0])
+	file.write(data[0] + "," + data[1] + "," + data[2] + "," + data[3])
 	file.write("Echo Request Bytes Sent (bytes),Echo Request Data Sent (bytes)")
-	file.write(data[0] + "," + data[0])
+	file.write(data[4] + "," + data[6])
 	file.write("Echo Request Bytes Received (bytes),Echo Request Data Received (bytes)")
-	file.write(data[0] + "," + data[0])
+	file.write(data[5] + "," + data[7])
 	file.write ("\n")
 
-	file.write("Average RTT (milliseconds)," + data[0])
-	file.write("Echo Request Throughput (kB/sec)," + data[0])
-	file.write("Echo Request Goodput (kB/sec)," + data[0])
-	file.write("Average Reply Delay (microseconds)," + data[0])
-	file.write("Average Echo Request Hop Count," + data[0])
+	file.write("Average RTT (milliseconds)," + data[8])
+	file.write("Echo Request Throughput (kB/sec)," + data[9])
+	file.write("Echo Request Goodput (kB/sec)," + data[10])
+	file.write("Average Reply Delay (microseconds)," + data[11])
+	file.write("Average Echo Request Hop Count," + data[12])
 
 def results(compute_data, file_num):
 	"""
@@ -116,7 +116,9 @@ def results(compute_data, file_num):
 	"""
 	# unpack list of items returned = compute_data
 	filename="project2_output.csv"
-	file = open(filename,"w")
-	file.write(f"Node {file_num}")
-	# need to finish formatting the csv file here
-	format(file, compute_data)
+	with open(filename, "w") as file:
+		file.write(f"Node {file_num}")
+		# need to finish formatting the csv file here
+		format(file, compute_data)
+		file.close()
+	
