@@ -92,7 +92,8 @@ def compute(ip_address, res, file_num):
 	for index in range(len(res)):
 		if res[index][8] == "reply" :
 			if res[index][3] == ip_address: #destination
-				hop_count += windows_hop - int(res[11])
+				hop_ttl = res[i][11].split("=")
+				hop_count += (windows_hop - int(hop_ttl[1]))
 
 	print(hop_count)
 
@@ -119,7 +120,7 @@ def compute(ip_address, res, file_num):
 	data_for_csv.append(echo_request_goodput)
 	data_for_csv.append(avg_reply_delay)
 	#Below is where hop count will go, fill in variable name
-	data_for_csv.append("Average Hop Count Here")
+	data_for_csv.append(avg_hop)
 
 	results(data_for_csv, file_num)
 
