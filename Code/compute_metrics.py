@@ -1,6 +1,6 @@
 def compute(ip_address, res, file_num):
 	"""
-	13 items are computed/returned here
+	13 summarys are computed/returned here
 	NOTE: 
 	res is a list of lists that contain information about seq number, time, source etc (check below)
 	
@@ -8,9 +8,9 @@ def compute(ip_address, res, file_num):
 
 	what we want (most likey im probz missing something)
 
-	index | item
+	index | summary
 
-	1 : item
+	1 : time
 	2 : source ip
 	3 :	destination ip
 	5 :	length
@@ -45,42 +45,62 @@ def compute(ip_address, res, file_num):
 
 	avg_reply_delay = 0
 	
-	curr_time = 0
-	previous_time = 0
+	rtt_time= 0
+	replay_delay_time = 0
+
+	total_replay_delay_time =0 
+
+	total_rtt_time = 0
 
 
-	for seqNum, time, source, dest, prot, length, echo_type, id, seq, ttl in res:
-		
-		previous_time = curr_time
-		curr_time = time
+	for summary in res :
+		if summary[8] == "reply" :
+			if summary[2] == ip_address :
+				num_replies_sent += 1 # replies sent
+			elif summary[3] == ip_address :
+				num_replies_received += 1 #replies received
+		if summary[8] == "request" :
+			if summary[2] == ip_address :
+				num_requests_sent += 1 #requests sent
+				total_bytes_sent += int(summary[5]) #request bytes sent
+				total_data_sent += int(summary[5]) -  28 # idk if its 28 i didnt double check bru
+			elif summary[3] == ip_address :
+				num_requests_received += 1 #received requestes
+				total_bytes_received += int(summary[5]) #request bytes received
+				total_data_received += int(summary[5]) - 28 #total data recieved
 
-		if source == ip_address:
-			if "reply" in echo_type:
-				num_replies_sent += 1
-				total_RTT += curr_time - previous_time
-			else:
-				num_requests_sent +=1
-				total_bytes_sent += length
-				total_data_sent += (length - 28)
-		else:
-			if "reply" in echo_type:
-				num_replies_received += 1
-			else:
-				num_requests_received += 1
-				total_bytes_received += length
-				total_data_received += (length - 28)
-		total_packets += 1
+	#average round trip time,echo request throughput/goodput
+#  Average Reply Delay (in microseconds)
+# • Defined as the time between a node receiving
+# an Echo Request packet and sending an Echo
+# Reply packet back to the source
 
+	for i in range(len(res)):
+		if res[i][8] == "request" :
+			if res[i][2] == ip_address :
+				rtt_time += 1
+				total_rtt_time += (float(res[i+1][1]))-(float(res[i][1]))
 
+	# avg reply delay
+	for i in range(len(res)):
+		if res[i][8] == "request" :
+			if res[i][3] == ip_address :
+				replay_delay_time += 1
+				total_replay_delay_time += (float(res[i+1][1]))-(float(res[i][1]))	
+
+	# hop count 
 	for index in range(len(res)):
 		if res[index][8] == "reply" :
 			if res[index][3] == ip_address: #destination
 				hop_count += windows_hop - int(res[11])
 
 	print(hop_count)
-	echo_request_throughput = total_bytes_sent / total_RTT
 
-	echo_request_goodput = total_data_sent / total_RTT
+	avg_rtt = (total_rtt_time / rtt_time) #avg ping round trip time  1
+	echo_request_throughput = total_bytes_sent / total_rtt_time
+
+	avg_hop = hop_count/ num_requests_sent # 2
+	echo_request_goodput = total_data_sent / total_RTT # 3
 
 	avg_ping_RTT = total_RTT / total_packets
 
@@ -124,7 +144,7 @@ def results(compute_data, file_num):
 	"""
 	Compile results into csv file via unpacking variables from compute()
 	"""
-	# unpack list of items returned = compute_data
+	# unpack list of summarys returned = compute_data
 	filename="project2_output.csv"
 	with open(filename, "w") as file:
 		file.write(f"Node {file_num}")
