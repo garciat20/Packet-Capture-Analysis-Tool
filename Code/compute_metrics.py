@@ -29,6 +29,9 @@ def compute(ip_address, res, file_num):
 	total_bytes_sent = 0
 	total_bytes_received = 0
 	
+	hop_count = 0
+	windows_hop = 129
+
 	total_data_sent = 0
 	total_data_received = 0
 
@@ -68,6 +71,13 @@ def compute(ip_address, res, file_num):
 				total_data_received += (length - 28)
 		total_packets += 1
 
+
+	for index in range(len(res)):
+		if res[index][8] == "reply" :
+			if res[index][3] == ip_address: #destination
+				hop_count += windows_hop - int(res[11])
+
+	print(hop_count)
 	echo_request_throughput = total_bytes_sent / total_RTT
 
 	echo_request_goodput = total_data_sent / total_RTT
