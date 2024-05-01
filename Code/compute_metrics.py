@@ -18,7 +18,78 @@ def compute(ip_address, res, file_num):
 	11 : ttl (we need this for hops)
 	"""
 
+	num_requests_sent = 0
+	num_requests_received = 0
+	
+	num_replies_sent = 0
+	num_replies_received = 0
+	
+	total_bytes_sent = 0
+	total_bytes_received = 0
+	
+	total_data_sent = 0
+	total_data_received = 0
+
+	avg_ping_RTT = 0
+	total_RTT = 0
+	total_packets = 0
+
+	echo_request_throughput = 0
+
+	echo_request_goodput = 0
+
+	avg_reply_delay = 0
+	
+	curr_time = 0
+	previous_time = 0
+
+
+	for seqNum, time, source, dest, prot, length, echo_type, id, seq, ttl in res:
+		
+		previous_time = curr_time
+		curr_time = time
+
+		if source == ip_address:
+			if "reply" in echo_type:
+				num_replies_sent += 1
+				total_RTT += curr_time - previous_time
+			else:
+				num_requests_sent +=1
+				total_bytes_sent += length
+				total_data_sent += (length - 28)
+		else:
+			if "reply" in echo_type:
+				num_replies_received += 1
+			else:
+				num_requests_received += 1
+				total_bytes_received += length
+				total_data_received += (length - 28)
+		
+		total_packets += 1
+
+	echo_request_throughput = total_bytes_sent / total_RTT
+
+	echo_request_goodput = total_data_sent / total_RTT
+
+	avg_ping_RTT = total_RTT / total_packets
+
+	data_for_csv.append(num_requests_sent)
+	data_for_csv.append(num_requests_received)
+	data_for_csv.append(num_replies_sent)
+	data_for_csv.append(num_replies_received)
+	data_for_csv.append(total_bytes_sent)
+	data_for_csv.append(total_bytes_received)
+	data_for_csv.append(total_data_sent)
+	data_for_csv.append(total_data_received)
+	data_for_csv.append(avg_ping_RTT)
+	data_for_csv.append(echo_request_throughput)
+	data_for_csv.append(echo_request_goodput)
+	data_for_csv.append(avg_reply_delay)
+
 	data_for_csv = [] #13 pieces of data can be placed here
+
+	results(data_for_csv, file_num)
+
 
 	results(data_for_csv, file_num)
 
